@@ -1,0 +1,42 @@
+server:
+  port: 8080
+
+spring:
+  application:
+    name: gateway-server
+  cloud:
+    gateway:
+      discovery:
+        locator:
+          enabled: true
+          lower-case-service-id: true
+      routes:
+        - id: commandes-v1
+          uri: lb://microservice-commandes-v1
+          predicates:
+            - Path=/api/v1/commandes/**
+          filters:
+            - StripPrefix=3
+            - PrefixPath=/commandes
+
+        - id: commandes-v2
+          uri: lb://microservice-commandes-v2
+          predicates:
+            - Path=/api/v2/commandes/**
+          filters:
+             # Stripping /api/v2/commandes to map to /commandes-v2 inside the service? 
+             # Service V2 has controller at /commandes-v2
+             - RewritePath=/api/v2/commandes/(?<segment>.*), /commandes-v2/$\{segment}
+
+        - id: produits
+          uri: lb://microservice-produit
+          predicates:
+            - Path=/api/produits/**
+          filters:
+            - StripPrefix=2
+            - PrefixPath=/produits
+            
+eureka:
+  client:
+    service-url:
+      defaultZone: http://localhost:8761/eureka/

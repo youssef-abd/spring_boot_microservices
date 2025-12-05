@@ -1,0 +1,30 @@
+server:
+  port: 8083
+
+spring:
+  application:
+    name: microservice-commandes-v2
+  config:
+    import: "optional:configserver:http://localhost:8888/"
+  cloud:
+    config:
+      fail-fast: true
+  datasource:
+    url: jdbc:h2:mem:commandesv2db
+
+# Resilience4j Config
+resilience4j:
+  circuitbreaker:
+    instances:
+      produitService:
+        registerHealthIndicator: true
+        slidingWindowSize: 5
+        minimumNumberOfCalls: 3
+        permittedNumberOfCallsInHalfOpenState: 3
+        automaticTransitionFromOpenToHalfOpenEnabled: true
+        waitDurationInOpenState: 5s
+        failureRateThreshold: 50
+  timelimiter:
+    instances:
+      produitService:
+        timeoutDuration: 2s 
