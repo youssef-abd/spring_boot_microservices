@@ -12,29 +12,32 @@ spring:
           lower-case-service-id: true
       routes:
         - id: commandes-v1
-          uri: lb://microservice-commandes-v1
+          uri: lb://MICROSERVICE-COMMANDES-V1
           predicates:
             - Path=/api/v1/commandes/**
           filters:
-            - StripPrefix=3
-            - PrefixPath=/commandes
+            - StripPrefix=2
+            # Result: /api/v1/commandes/foo -> /commandes/foo (Perfect for Controller)
 
         - id: commandes-v2
-          uri: lb://microservice-commandes-v2
+          uri: lb://MICROSERVICE-COMMANDES-V2
+          # Service V2 has @RequestMapping("/commandes-v2")
+          # Incoming: /api/v2/commandes/**
+          # We want: /commandes-v2/**
           predicates:
             - Path=/api/v2/commandes/**
           filters:
-             # Stripping /api/v2/commandes to map to /commandes-v2 inside the service? 
-             # Service V2 has controller at /commandes-v2
-             - RewritePath=/api/v2/commandes/(?<segment>.*), /commandes-v2/$\{segment}
+            - RewritePath=/api/v2/commandes/(?<segment>.*), /commandes-v2/$\{segment}
 
         - id: produits
-          uri: lb://microservice-produit
+          uri: lb://MICROSERVICE-PRODUIT
           predicates:
             - Path=/api/produits/**
           filters:
-            - StripPrefix=2
-            - PrefixPath=/produits
+            - StripPrefix=1
+            # Incoming: /api/produits
+            # We want: /produits (Service has @RequestMapping("/produits"))
+            # Strip 1: /produits (Perfect)
             
 eureka:
   client:

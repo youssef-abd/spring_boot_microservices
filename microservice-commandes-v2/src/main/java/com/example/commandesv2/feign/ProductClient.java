@@ -6,7 +6,7 @@ import org.springframework.web.bind.annotation.GetMapping;
 import org.springframework.web.bind.annotation.PathVariable;
 
 // "microservice-produit" matches the spring.application.name of the product service in Eureka
-@FeignClient(name = "microservice-produit")
+@FeignClient(name = "MICROSERVICE-PRODUIT")
 public interface ProductClient {
     
     @GetMapping("/produits/{id}")

@@ -23,10 +23,35 @@ public class CommandeController {
         this.productClient = productClient;
     }
 
+    @GetMapping
+    public java.util.List<Commande> getAll() {
+        return repository.findAll();
+    }
+
+    @PostMapping
+    public Commande create(@RequestBody Commande commande) {
+        return repository.save(commande);
+    }
+
+    @PutMapping("/{id}")
+    public Commande update(@PathVariable Long id, @RequestBody Commande commande) {
+        commande.setId(id);
+        return repository.save(commande);
+    }
+
+    @DeleteMapping("/{id}")
+    public void delete(@PathVariable Long id) {
+        repository.deleteById(id);
+    }
+
     @GetMapping("/{id}")
+    @io.swagger.v3.oas.annotations.Operation(summary = "Get Commande by ID")
     @CircuitBreaker(name = "produitService", fallbackMethod = "fallbackGetCommande")
-    public CommandeResponseDTO getCommandeWithProduct(@PathVariable Long id) {
-        Commande commande = repository.findById(id).orElseThrow();
+    public CommandeResponseDTO getCommandeWithProduct(
+            @io.swagger.v3.oas.annotations.Parameter(description = "ID of the commande", required = true)
+            @PathVariable("id") Long id) {
+        Commande commande = repository.findById(id)
+                .orElseThrow(() -> new org.springframework.web.server.ResponseStatusException(org.springframework.http.HttpStatus.NOT_FOUND, "Commande non trouvée"));
         // Call Product Service via Feign
         ProductDTO product = productClient.getProduitById(commande.getIdProduit());
         return new CommandeResponseDTO(commande, product);
@@ -34,9 +59,11 @@ public class CommandeController {
     
     // Fallback method
     public CommandeResponseDTO fallbackGetCommande(Long id, Throwable t) {
-        Commande commande = repository.findById(id).orElseThrow();
+        Commande commande = repository.findById(id)
+                 .orElseThrow(() -> new org.springframework.web.server.ResponseStatusException(org.springframework.http.HttpStatus.NOT_FOUND, "Commande non trouvée (Fallback)"));
         ProductDTO fallbackProduct = new ProductDTO();
-        fallbackProduct.setNom("Produit non disponible (Fallback)");
+        // DEBUG: Show the real error in the name
+        fallbackProduct.setNom("Fallback (Erreur: " + t.getMessage() + ")");
         fallbackProduct.setPrix(0.0);
         return new CommandeResponseDTO(commande, fallbackProduct);
     }

@@ -4,6 +4,7 @@ import com.example.produit.domain.Produit;
 import com.example.produit.repository.ProduitRepository;
 import org.springframework.web.bind.annotation.*;
 import java.util.List;
+import java.util.Optional;
 
 @RestController
 @RequestMapping("/produits")
@@ -21,8 +22,20 @@ public class ProduitController {
     }
 
     @GetMapping("/{id}")
-    public Produit getById(@PathVariable Long id) {
-        return repository.findById(id).orElseThrow(() -> new RuntimeException("Product not found"));
+    public Produit getById(@PathVariable("id") Long id) {
+        System.out.println("=== GET BY ID CALLED: " + id);
+        Optional<Produit> produit = repository.findById(id);
+        System.out.println("=== FOUND: " + produit.isPresent());
+        if (produit.isPresent()) {
+            System.out.println("=== PRODUIT: " + produit.get().getNom());
+            return produit.get();
+        }
+        throw new RuntimeException("Produit non trouvé: " + id);
+    }
+    
+    @GetMapping("/test/{id}")
+    public String test(@PathVariable("id") Long id) {
+        return "Test OK pour ID: " + id;
     }
     
     // Endpoint pour simuler un timeout

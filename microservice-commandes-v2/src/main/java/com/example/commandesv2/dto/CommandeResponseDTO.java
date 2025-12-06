@@ -11,10 +11,13 @@ public class CommandeResponseDTO {
     private LocalDate date;
     private ProductDTO produit;
     
+    private Long idProduit;
+    
     public CommandeResponseDTO(Commande c, ProductDTO p) {
         this.id = c.getId();
         this.description = c.getDescription();
         this.date = c.getDate();
+        this.idProduit = c.getIdProduit();
         this.produit = p;
     }
 }
