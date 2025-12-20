@@ -1,8 +1,9 @@
 # Projet Microservices JEE - Spring Boot 3 & Spring Cloud
 
 ## 👥 Équipe de Développement
-*   **Membre 1** : [Votre Nom]
-*   **Membre 2** : [Nom du binôme si applicable]
+*   **Membre 1** : Abdelmoumene youssef
+*   **Membre 2** : Merouania Aiman
+*   **Groupe** : 5IIR11 G2
 
 Ce projet est une implémentation complète d'une architecture microservices pour le devoir de JEE. Il démontre l'utilisation de Spring Cloud Config, Eureka, Gateway, OpenFeign, Resilience4j, et Spring Cloud LoadBalancer.
 
