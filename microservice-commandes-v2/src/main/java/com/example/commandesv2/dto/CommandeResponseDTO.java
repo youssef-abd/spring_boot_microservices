@@ -10,13 +10,14 @@ public class CommandeResponseDTO {
     private String description;
     private LocalDate date;
     private ProductDTO produit;
-    
+    private Double montant;
     private Long idProduit;
     
     public CommandeResponseDTO(Commande c, ProductDTO p) {
         this.id = c.getId();
         this.description = c.getDescription();
         this.date = c.getDate();
+        this.montant = c.getMontant();
         this.idProduit = c.getIdProduit();
         this.produit = p;
     }

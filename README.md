@@ -1,8 +1,9 @@
 # Projet Microservices JEE - Spring Boot 3 & Spring Cloud
 
 ## 👥 Équipe de Développement
-*   **Membre 1** : [Votre Nom]
-*   **Membre 2** : [Nom du binôme si applicable]
+*   **Membre 1** : Abdelmoumene youssef
+*   **Membre 2** : Merouania Aiman
+*   **Groupe** : 5IIR11 G2
 
 Ce projet est une implémentation complète d'une architecture microservices pour le devoir de JEE. Il démontre l'utilisation de Spring Cloud Config, Eureka, Gateway, OpenFeign, Resilience4j, et Spring Cloud LoadBalancer.
 
@@ -39,8 +40,7 @@ graph TD
     *   *Feature*: Config dynamique `@RefreshScope`, Health Check personnalisé.
 5.  **microservice-produit** (`:8082`): Service de gestion des produits.
     *   *Feature*: Simulation de latence pour tester le Circuit Breaker.
-   - **[GUIDE UTILISATEUR UI (React)](GUIDE_INTERFACE_UI.md)** : Guide pour lancer et utiliser la nouvelle interface graphique.
-- **[GUIDE ENTRETIEN TECHNIQUE](GUIDE_ENTRETIEN_TECHNIQUE.md)** : Questions/Réponses pour préparer un entretien sur ce projet.
+
 6.  **microservice-commandes-v2** (`:8083`): Version 2 des commandes.
     *   *Feature*: Appelle `microservice-produit` via Feign. Protégé par **Resilience4j** (fallback).
 
@@ -100,8 +100,8 @@ cd gateway-server
 mvn spring-boot:run
 ```
 
-### 3. Load Balancing (Optionnel)
-Pour tester le load balancing, lancez une **deuxième instance** de `microservice-commandes-v1` sur un autre port (ex: 8084) :
+### 3. Load Balancing
+Pour tester le load balancing, lancez une **deuxième instance** de `microservice-commandes-v1` sur un autre port (ex: 8084)
 
 **Terminal 7 (Autre instance)**
 ```bash

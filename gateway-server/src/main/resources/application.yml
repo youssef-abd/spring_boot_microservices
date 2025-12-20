@@ -16,8 +16,7 @@ spring:
           predicates:
             - Path=/api/v1/commandes/**
           filters:
-            - StripPrefix=2
-            # Result: /api/v1/commandes/foo -> /commandes/foo (Perfect for Controller)
+            - RewritePath=/api/v1/commandes(?<segment>/?.*), /commandes$\{segment}
 
         - id: commandes-v2
           uri: lb://MICROSERVICE-COMMANDES-V2

@@ -1,6 +1,6 @@
 import React, { useEffect, useState } from 'react';
 import api from '../api';
-import { Package, Loader, Plus, Trash2 } from 'lucide-react';
+import { Package, Loader, Plus, Trash2, Pencil } from 'lucide-react';
 
 const Produits = () => {
     const [produits, setProduits] = useState([]);
@@ -8,6 +8,8 @@ const Produits = () => {
     const [error, setError] = useState(null);
     const [showModal, setShowModal] = useState(false);
     const [formData, setFormData] = useState({ nom: '', prix: '' });
+    const [isEditing, setIsEditing] = useState(false);
+    const [currentId, setCurrentId] = useState(null);
 
     useEffect(() => {
         fetchProduits();
@@ -27,13 +29,30 @@ const Produits = () => {
     const handleSubmit = async (e) => {
         e.preventDefault();
         try {
-            await api.post('/produits', { nom: formData.nom, prix: parseFloat(formData.prix) });
-            setShowModal(false);
-            setFormData({ nom: '', prix: '' });
+            if (isEditing) {
+                await api.put(`/produits/${currentId}`, { nom: formData.nom, prix: parseFloat(formData.prix) });
+            } else {
+                await api.post('/produits', { nom: formData.nom, prix: parseFloat(formData.prix) });
+            }
+            closeModal();
             fetchProduits();
         } catch (err) {
-            alert("Erreur création produit");
+            alert("Erreur lors de l'enregistrement");
         }
+    };
+
+    const openEditModal = (produit) => {
+        setFormData({ nom: produit.nom, prix: produit.prix });
+        setIsEditing(true);
+        setCurrentId(produit.id);
+        setShowModal(true);
+    };
+
+    const closeModal = () => {
+        setShowModal(false);
+        setFormData({ nom: '', prix: '' });
+        setIsEditing(false);
+        setCurrentId(null);
     };
 
 
@@ -57,7 +76,7 @@ const Produits = () => {
                     <p style={{ color: '#6b7280' }}>Catalogue Produits</p>
                 </div>
                 <button
-                    onClick={() => setShowModal(true)}
+                    onClick={() => { setIsEditing(false); setFormData({ nom: '', prix: '' }); setShowModal(true); }}
                     style={{ backgroundColor: '#4f46e5', color: 'white', border: 'none', padding: '10px 20px', borderRadius: '8px', cursor: 'pointer', display: 'flex', alignItems: 'center', gap: '8px' }}
                 >
                     <Plus size={18} /> Nouveau Produit
@@ -74,13 +93,22 @@ const Produits = () => {
                                 <div style={{ padding: '8px', backgroundColor: '#e0e7ff', borderRadius: '8px', color: '#4f46e5' }}><Package size={20} /></div>
                                 <span style={{ fontSize: '1.25rem', fontWeight: 'bold', color: '#4f46e5' }}>{produit.prix} DH</span>
                             </div>
-                            <button
-                                onClick={() => handleDelete(produit.id)}
-                                style={{ padding: '8px', backgroundColor: '#fee2e2', color: '#ef4444', border: 'none', borderRadius: '8px', cursor: 'pointer', transition: 'background 0.2s' }}
-                                title="Supprimer"
-                            >
-                                <Trash2 size={18} />
-                            </button>
+                            <div style={{ display: 'flex', gap: '8px' }}>
+                                <button
+                                    onClick={() => openEditModal(produit)}
+                                    style={{ padding: '8px', backgroundColor: '#e0e7ff', color: '#4f46e5', border: 'none', borderRadius: '8px', cursor: 'pointer' }}
+                                    title="Modifier"
+                                >
+                                    <Pencil size={18} />
+                                </button>
+                                <button
+                                    onClick={() => handleDelete(produit.id)}
+                                    style={{ padding: '8px', backgroundColor: '#fee2e2', color: '#ef4444', border: 'none', borderRadius: '8px', cursor: 'pointer', transition: 'background 0.2s' }}
+                                    title="Supprimer"
+                                >
+                                    <Trash2 size={18} />
+                                </button>
+                            </div>
                         </div>
                         <h3 style={{ fontSize: '1.1rem', fontWeight: 'bold', marginBottom: '4px' }}>{produit.nom}</h3>
                         <p style={{ color: '#9ca3af', fontSize: '0.8rem' }}>Reference #{produit.id}</p>
@@ -92,13 +120,13 @@ const Produits = () => {
             {showModal && (
                 <div style={{ position: 'fixed', top: 0, left: 0, right: 0, bottom: 0, backgroundColor: 'rgba(0,0,0,0.5)', display: 'flex', alignItems: 'center', justifyContent: 'center', zIndex: 100 }}>
                     <div style={{ backgroundColor: 'white', padding: '24px', borderRadius: '16px', width: '350px' }}>
-                        <h2 style={{ marginBottom: '16px', fontWeight: 'bold' }}>Ajouter Produit</h2>
+                        <h2 style={{ marginBottom: '16px', fontWeight: 'bold' }}>{isEditing ? 'Modifier Produit' : 'Ajouter Produit'}</h2>
                         <form onSubmit={handleSubmit} style={{ display: 'flex', flexDirection: 'column', gap: '12px' }}>
                             <input placeholder="Nom du produit" value={formData.nom} onChange={e => setFormData({ ...formData, nom: e.target.value })} required style={{ padding: '8px', border: '1px solid #ddd', borderRadius: '4px' }} />
                             <input type="number" step="0.01" placeholder="Prix" value={formData.prix} onChange={e => setFormData({ ...formData, prix: e.target.value })} required style={{ padding: '8px', border: '1px solid #ddd', borderRadius: '4px' }} />
                             <div style={{ display: 'flex', gap: '8px', marginTop: '8px' }}>
-                                <button type="button" onClick={() => setShowModal(false)} style={{ flex: 1, padding: '8px', background: '#f3f4f6', border: 'none', borderRadius: '4px', cursor: 'pointer' }}>Annuler</button>
-                                <button type="submit" style={{ flex: 1, padding: '8px', background: '#4f46e5', color: 'white', border: 'none', borderRadius: '4px', cursor: 'pointer' }}>Ajouter</button>
+                                <button type="button" onClick={closeModal} style={{ flex: 1, padding: '8px', background: '#f3f4f6', border: 'none', borderRadius: '4px', cursor: 'pointer' }}>Annuler</button>
+                                <button type="submit" style={{ flex: 1, padding: '8px', background: '#4f46e5', color: 'white', border: 'none', borderRadius: '4px', cursor: 'pointer' }}>{isEditing ? 'Mettre à jour' : 'Ajouter'}</button>
                             </div>
                         </form>
                     </div>

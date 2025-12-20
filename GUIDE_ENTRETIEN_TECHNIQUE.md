@@ -832,6 +832,15 @@ Cette section fait le lien direct entre les exigences de l'énoncé et leur impl
 *   **Technologie**: Spring Cloud Gateway (successeur de Zuul).
 *   **Fonction**: C'est le SEUL port que le client (Frontend React) contacte. La Gateway redirige ensuite vers 8081, 8082, 8083.
 *   **Preuve**: Dans le code React (`api.js`), `baseURL` pointe sur `http://localhost:8080`.
+
+### 4. Où est "Spring Cloud" dans ce projet ?
+C'est la question piège classique. Voici le résumé :
+- **Spring Cloud Config** : Module `config-server`, gestion centralisée des `.yml`.
+- **Spring Cloud Netflix Eureka** : Module `eureka-server`, annuaire des services.
+- **Spring Cloud Gateway** : Module `gateway-server`, point d'entrée unique.
+- **Spring Cloud OpenFeign** : Dans Commandes V2, interface `ProductClient` pour appeler le service Produit.
+- **Spring Cloud LoadBalancer** : Intégré via le préfixe `lb://` dans la Gateway et Feign.
+- **Spring Cloud Circuit Breaker** : Intégration de Resilience4j pour le fallback.
 - "Quelle est votre stratégie de versioning des APIs ?"
 - "Comment tracez-vous les requêtes à travers les services ?"
 

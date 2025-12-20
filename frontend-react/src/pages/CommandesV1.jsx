@@ -1,6 +1,6 @@
 import React, { useEffect, useState } from 'react';
 import api from '../api';
-import { Clock, Plus, Loader, RefreshCw, Trash2 } from 'lucide-react';
+import { Clock, Plus, Loader, RefreshCw, Trash2, Pencil } from 'lucide-react';
 
 const CommandesV1 = () => {
     const [commandes, setCommandes] = useState([]);
@@ -15,6 +15,8 @@ const CommandesV1 = () => {
         montant: 0,
         date: new Date().toISOString().split('T')[0]
     });
+    const [isEditing, setIsEditing] = useState(false);
+    const [currentId, setCurrentId] = useState(null);
 
     const [error, setError] = useState(null);
 
@@ -28,7 +30,7 @@ const CommandesV1 = () => {
         try {
             // On tente de récupérer les commandes
             try {
-                const allRes = await api.get('/v1/commandes');
+                const allRes = await api.get('/v1/commandes/all');
                 setCommandes(allRes.data);
             } catch (e) {
                 console.error("Erreur chargement commandes:", e);
@@ -55,13 +57,35 @@ const CommandesV1 = () => {
     const handleSubmit = async (e) => {
         e.preventDefault();
         try {
-            await api.post('/v1/commandes', formData);
-            setShowModal(false);
+            if (isEditing) {
+                await api.put(`/v1/commandes/${currentId}`, formData);
+            } else {
+                await api.post('/v1/commandes', formData);
+            }
+            closeModal();
             fetchData();
-            setFormData({ description: '', quantite: 1, montant: 0, date: new Date().toISOString().split('T')[0] });
         } catch (err) {
-            alert('Erreur lors de la création');
+            alert("Erreur lors de l'enregistrement");
         }
+    };
+
+    const openEditModal = (cmd) => {
+        setFormData({
+            description: cmd.description,
+            quantite: cmd.quantite || 1,
+            montant: cmd.montant,
+            date: cmd.date
+        });
+        setIsEditing(true);
+        setCurrentId(cmd.id);
+        setShowModal(true);
+    };
+
+    const closeModal = () => {
+        setShowModal(false);
+        setFormData({ description: '', quantite: 1, montant: 0, date: new Date().toISOString().split('T')[0] });
+        setIsEditing(false);
+        setCurrentId(null);
     };
 
     const handleDelete = async (id) => {
@@ -99,7 +123,7 @@ const CommandesV1 = () => {
                     <p style={{ color: '#6b7280' }}>Étude de Cas 1 : CRUD Classique & Config Dynamique</p>
                 </div>
                 <button
-                    onClick={() => setShowModal(true)}
+                    onClick={() => { setIsEditing(false); setFormData({ description: '', quantite: 1, montant: 0, date: new Date().toISOString().split('T')[0] }); setShowModal(true); }}
                     style={{ backgroundColor: '#4f46e5', color: 'white', border: 'none', padding: '10px 20px', borderRadius: '8px', display: 'flex', alignItems: 'center', gap: '8px', cursor: 'pointer' }}
                 >
                     <Plus size={18} /> Nouvelle
@@ -173,6 +197,9 @@ const CommandesV1 = () => {
                                 <td style={{ padding: '16px' }}>{cmd.date}</td>
                                 <td style={{ padding: '16px', fontWeight: 'bold' }}>{cmd.montant} DH</td>
                                 <td style={{ padding: '16px' }}>
+                                    <button onClick={() => openEditModal(cmd)} style={{ background: 'none', border: 'none', cursor: 'pointer', color: '#4f46e5', marginRight: '10px' }} title="Modifier">
+                                        <Pencil size={18} />
+                                    </button>
                                     <button onClick={() => handleDelete(cmd.id)} style={{ background: 'none', border: 'none', cursor: 'pointer', color: '#ef4444' }} title="Supprimer">
                                         <Trash2 size={18} />
                                     </button>
@@ -180,7 +207,7 @@ const CommandesV1 = () => {
                             </tr>
                         ))}
                         {currentList.length === 0 && (
-                            <tr><td colSpan="4" style={{ padding: '32px', textAlign: 'center', color: '#9ca3af' }}>Aucune commande dans cette vue</td></tr>
+                            <tr><td colSpan="5" style={{ padding: '32px', textAlign: 'center', color: '#9ca3af' }}>Aucune commande dans cette vue</td></tr>
                         )}
                     </tbody>
                 </table>
@@ -190,14 +217,14 @@ const CommandesV1 = () => {
             {showModal && (
                 <div style={{ position: 'fixed', top: 0, left: 0, right: 0, bottom: 0, backgroundColor: 'rgba(0,0,0,0.5)', display: 'flex', alignItems: 'center', justifyContent: 'center', zIndex: 100 }}>
                     <div style={{ backgroundColor: 'white', padding: '24px', borderRadius: '16px', width: '400px' }}>
-                        <h2 style={{ marginBottom: '16px', fontSize: '1.25rem', fontWeight: 'bold' }}>Nouvelle Commande V1</h2>
+                        <h2 style={{ marginBottom: '16px', fontSize: '1.25rem', fontWeight: 'bold' }}>{isEditing ? 'Modifier Commande' : 'Nouvelle Commande V1'}</h2>
                         <form onSubmit={handleSubmit} style={{ display: 'flex', flexDirection: 'column', gap: '12px' }}>
                             <input placeholder="Description" value={formData.description} onChange={e => setFormData({ ...formData, description: e.target.value })} required style={{ padding: '8px', border: '1px solid #ddd', borderRadius: '4px' }} />
                             <input type="number" placeholder="Montant" value={formData.montant} onChange={e => setFormData({ ...formData, montant: parseFloat(e.target.value) })} required style={{ padding: '8px', border: '1px solid #ddd', borderRadius: '4px' }} />
                             <input type="date" value={formData.date} onChange={e => setFormData({ ...formData, date: e.target.value })} required style={{ padding: '8px', border: '1px solid #ddd', borderRadius: '4px' }} />
                             <div style={{ display: 'flex', gap: '8px', marginTop: '16px' }}>
-                                <button type="button" onClick={() => setShowModal(false)} style={{ flex: 1, padding: '8px', background: '#f3f4f6', border: 'none', borderRadius: '4px', cursor: 'pointer' }}>Annuler</button>
-                                <button type="submit" style={{ flex: 1, padding: '8px', background: '#4f46e5', color: 'white', border: 'none', borderRadius: '4px', cursor: 'pointer' }}>Créer</button>
+                                <button type="button" onClick={closeModal} style={{ flex: 1, padding: '8px', background: '#f3f4f6', border: 'none', borderRadius: '4px', cursor: 'pointer' }}>Annuler</button>
+                                <button type="submit" style={{ flex: 1, padding: '8px', background: '#4f46e5', color: 'white', border: 'none', borderRadius: '4px', cursor: 'pointer' }}>{isEditing ? 'Mettre à jour' : 'Créer'}</button>
                             </div>
                         </form>
                     </div>

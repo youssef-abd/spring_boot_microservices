@@ -26,6 +26,11 @@ public class CommandeController {
         return repository.findAll();
     }
 
+    @GetMapping("/all")
+    public List<Commande> getAllAlias() {
+        return repository.findAll();
+    }
+
     @GetMapping("/{id}")
     public Commande getById(@PathVariable Long id) {
         return repository.findById(id).orElseThrow(() -> new RuntimeException("Commande not found"));

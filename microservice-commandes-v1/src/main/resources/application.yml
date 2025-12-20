@@ -6,3 +6,18 @@ spring:
   cloud:
     config:
       fail-fast: true
+  jpa:
+    database-platform: org.hibernate.community.dialect.SQLiteDialect
+    hibernate:
+      ddl-auto: update
+    show-sql: true
+  datasource:
+    url: jdbc:sqlite:commandesv1.db
+    driver-class-name: org.sqlite.JDBC
+    username: ""
+    password: ""
+
+eureka:
+  client:
+    service-url:
+      defaultZone: http://localhost:8761/eureka/
