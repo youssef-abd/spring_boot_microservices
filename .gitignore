@@ -1,10 +1,36 @@
-target/
-!.mvn/wrapper/maven-wrapper.jar
-!**/src/main/**/target/
-.classpath
-.project
-.settings
-.idea
+# Fichiers de documentation et scripts locaux (Demande user)
+RAPPORT_PROJET.tex
+*.pdf
+*.bat
+GUIDE_ENTRETIEN_TECHNIQUE.md
+GUIDE_DEMONSTRATION.md
+GUIDE_GITHUB.md
+GUIDE_INTERFACE_UI.md
+VALIDATION_EXIGENCES.md
+rebuild_all.bat
+start_clean.bat
+start_frontend.bat
+start_gateway.bat
+start_services.bat
+stop_all.bat
+
+# IDE
+.idea/
+.vscode/
 *.iml
-.DS_Store
+
+# Java / Maven
+target/
+*.class
+
+# Node / React
+node_modules/
+dist/
+.env
+
+# Bases de données locales (Important pour ne pas push les DBs)
+*.db
+*.sqlite
+
+# Logs
 *.log

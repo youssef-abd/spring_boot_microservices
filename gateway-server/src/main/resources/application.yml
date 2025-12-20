@@ -27,7 +27,7 @@ spring:
           predicates:
             - Path=/api/v2/commandes/**
           filters:
-            - RewritePath=/api/v2/commandes/(?<segment>.*), /commandes-v2/$\{segment}
+            - RewritePath=/api/v2/commandes(?<segment>/?.*), /commandes-v2$\{segment}
 
         - id: produits
           uri: lb://MICROSERVICE-PRODUIT
@@ -38,8 +38,21 @@ spring:
             # Incoming: /api/produits
             # We want: /produits (Service has @RequestMapping("/produits"))
             # Strip 1: /produits (Perfect)
-            
+      
+      globalcors:
+        cors-configurations:
+          '[/**]':
+            allowedOrigins: "*"
+            allowedMethods:
+              - GET
+              - POST
+              - PUT
+              - DELETE
+              - OPTIONS
+            allowedHeaders: "*"
 eureka:
   client:
     service-url:
       defaultZone: http://localhost:8761/eureka/
+
+

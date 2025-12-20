@@ -16,11 +16,5 @@ public class CommandesV2Application {
         SpringApplication.run(CommandesV2Application.class, args);
     }
 
-    @Bean
-    CommandLineRunner start(CommandeRepository repo) {
-        return args -> {
-            repo.save(new Commande(null, "Achat Laptop", 1, LocalDate.now(), 1200.0, 1L)); // Product 1
-            repo.save(new Commande(null, "Achat Tel", 2, LocalDate.now().minusDays(2), 1600.0, 2L)); // Product 2
-        };
-    }
+    // Pas de données initiales
 }

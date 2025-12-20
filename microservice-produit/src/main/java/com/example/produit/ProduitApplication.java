@@ -13,12 +13,5 @@ public class ProduitApplication {
         SpringApplication.run(ProduitApplication.class, args);
     }
 
-    @Bean
-    CommandLineRunner start(ProduitRepository repo) {
-        return args -> {
-            repo.save(new Produit(null, "Laptop Dell", 1200.0));
-            repo.save(new Produit(null, "Smartphone Samsung", 800.0));
-            repo.save(new Produit(null, "Ecran 4K", 300.0));
-        };
-    }
+    // Pas de données initiales automatiques
 }

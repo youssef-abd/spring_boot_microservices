@@ -14,12 +14,5 @@ public class CommandesV1Application {
         SpringApplication.run(CommandesV1Application.class, args);
     }
     
-    @Bean
-    CommandLineRunner start(CommandeRepository repo) {
-        return args -> {
-            repo.save(new Commande(null, "Commande Initial 1", 2, LocalDate.now(), 100.0));
-            repo.save(new Commande(null, "Commande Initial 2", 1, LocalDate.now().minusDays(5), 50.0));
-            repo.save(new Commande(null, "Commande Old", 1, LocalDate.now().minusDays(20), 20.0));
-        };
-    }
+    // Pas de données initiales
 }

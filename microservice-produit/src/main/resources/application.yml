@@ -6,11 +6,16 @@ spring:
     name: microservice-produit
   config:
     import: "optional:configserver:http://localhost:8888/"
+  jpa:
+    database-platform: org.hibernate.community.dialect.SQLiteDialect
+    hibernate:
+      ddl-auto: update
+    show-sql: true
   datasource:
-    url: jdbc:h2:mem:produitsdb
-  h2:
-    console:
-      enabled: true
+    url: jdbc:sqlite:produits.db
+    driver-class-name: org.sqlite.JDBC
+    username: ""
+    password: ""
 
 eureka:
   client:

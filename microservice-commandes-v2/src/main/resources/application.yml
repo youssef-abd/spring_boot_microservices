@@ -9,8 +9,16 @@ spring:
   cloud:
     config:
       fail-fast: true
+  jpa:
+    database-platform: org.hibernate.community.dialect.SQLiteDialect
+    hibernate:
+      ddl-auto: update
+    show-sql: true
   datasource:
-    url: jdbc:h2:mem:commandesv2db
+    url: jdbc:sqlite:commandesv2.db
+    driver-class-name: org.sqlite.JDBC
+    username: ""
+    password: ""
 
 # Resilience4j Config
 resilience4j:

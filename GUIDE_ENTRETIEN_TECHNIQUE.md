@@ -798,6 +798,40 @@ public Produit getProduitById(Long id) {
 - "Quelle est votre stratégie de déploiement des microservices ?"
 - "Utilisez-vous Kubernetes ou Docker Swarm ?"
 - "Comment gérez-vous les secrets (DB passwords, API keys) ?"
+
+---
+
+## 📍 Correspondance avec l'Énoncé du Projet
+
+Cette section fait le lien direct entre les exigences de l'énoncé et leur implémentation dans le code.
+
+### 1. Load Balancing (Point 'e')
+> **Énoncé**: *"Mettre en place le mécanisme de load balancing pour cette application."*
+
+*   **Où ?** Dans `gateway-server`, fichier `application.yml`.
+*   **Code**: `uri: lb://MICROSERVICE-COMMANDES-V2`
+*   **Explication**: Le préfixe `lb://` (Load Balancer) indique à Spring Cloud Gateway d'utiliser Eureka pour obtenir la liste des instances disponibles du service. Si vous lancez 2 instances de `microservice-commandes-v2` (ex: port 8083 et 8084), la Gateway alternera les requêtes entre elles (Round Robin).
+
+### 2. Timeout & Hystrix/Resilience4j (Point 'f')
+> **Énoncé**: *"Simuler un Timeout d’un des deux microservices, et implémenter un mécanisme de contournement pour protéger le microservice appelant avec Hystrix."*
+
+*   **Où ?** Dans `microservice-commandes-v2`, classe `CommandeController.java`.
+*   **Code**:
+    ```java
+    @CircuitBreaker(name = "produitService", fallbackMethod = "fallbackGetCommande")
+    public CommandeResponseDTO getCommandeWithProduct(...) { ... }
+    ```
+*   **Simulation**: Éteignez le `microservice-produit`.
+*   **Résultat**: Au lieu d'une erreur 500, la méthode `fallbackGetCommande` est appelée et retourne un produit "bouchon" (ex: "Produit non disponible (Fallback)"), permettant à l'application de continuer à fonctionner en mode dégradé.
+*   *Note: Hystrix étant déprécié depuis Spring Boot 2.4, nous utilisons son successeur standard : **Resilience4j**.*
+
+### 3. API Gateway (Point 'c')
+> **Énoncé**: *"Implémenter une Gateway (Zuul ou API Gateway) comme point d’accès unique à l’application."*
+
+*   **Où ?** Projet `gateway-server` (Port 8080).
+*   **Technologie**: Spring Cloud Gateway (successeur de Zuul).
+*   **Fonction**: C'est le SEUL port que le client (Frontend React) contacte. La Gateway redirige ensuite vers 8081, 8082, 8083.
+*   **Preuve**: Dans le code React (`api.js`), `baseURL` pointe sur `http://localhost:8080`.
 - "Quelle est votre stratégie de versioning des APIs ?"
 - "Comment tracez-vous les requêtes à travers les services ?"
 
