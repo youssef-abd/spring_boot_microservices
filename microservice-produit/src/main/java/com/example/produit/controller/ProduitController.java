@@ -11,19 +11,28 @@ import java.util.Optional;
 public class ProduitController {
 
     private final ProduitRepository repository;
+    
+    @org.springframework.beans.factory.annotation.Value("${server.port}")
+    private String port;
 
     public ProduitController(ProduitRepository repository) {
         this.repository = repository;
     }
 
+    @GetMapping("/port")
+    public String getPort() {
+        return "Instance répondant sur le port : " + port;
+    }
+
     @GetMapping
     public List<Produit> getAll() {
+        System.out.println(">>> Requête reçue par l'instance sur le port : " + port);
         return repository.findAll();
     }
 
     @GetMapping("/{id}")
     public Produit getById(@PathVariable("id") Long id) {
-        System.out.println("=== GET BY ID CALLED: " + id);
+        System.out.println(">>> Requête (ByID) reçue par l'instance sur le port : " + port);
         Optional<Produit> produit = repository.findById(id);
         System.out.println("=== FOUND: " + produit.isPresent());
         if (produit.isPresent()) {

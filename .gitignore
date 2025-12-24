@@ -3,17 +3,14 @@ RAPPORT_PROJET.tex
 *.pdf
 *.bat
 GUIDE_ENTRETIEN_TECHNIQUE.md
-GUIDE_DEMONSTRATION.md
-GUIDE_GITHUB.md
-GUIDE_INTERFACE_UI.md
-VALIDATION_EXIGENCES.md
 rebuild_all.bat
 start_clean.bat
 start_frontend.bat
 start_gateway.bat
 start_services.bat
 stop_all.bat
-
+PREPARATION_SOUTENANCE.tex
+PREPARATION_SOUTENANCE.md
 
 # IDE
 .idea/
